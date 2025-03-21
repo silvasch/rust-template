@@ -1,6 +1,8 @@
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
+    tracing_subscriber::fmt::init();
+
     if let Err(e) = rust_bin_template::run() {
         eprintln!("error: {}", e);
         return ExitCode::from(1);
