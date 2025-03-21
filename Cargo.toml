@@ -1,7 +1,9 @@
 [package]
-name = "{{project-name}}"
+name = "{{ project-name }}"
 version = "0.1.0"
 edition = "2024"
+authors = ["{{ authors }}"]
+{% if description != "" %}description = "{{ description }}"{% endif %}
 
 [dependencies]
 dotenvy = "0.15.7"

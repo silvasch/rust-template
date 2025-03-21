@@ -1,0 +1,4 @@
+[placeholders.description]
+prompt = "Description"
+type = "string"
+default = ""
