@@ -7,7 +7,9 @@ authors = ["{{ authors }}"]
 
 [dependencies]
 dotenvy = "0.15.7"
+serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.12"
+toml = "0.8.20"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "env-filter"] }
 xdg = "2.5.2"

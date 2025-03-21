@@ -4,18 +4,32 @@ use crate::prelude::*;
 
 const TARGET: &str = "{{ crate_name }}::config";
 
-#[derive(Debug)]
-pub struct Config {}
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct Config {
+    #[serde(default = "default_foo")]
+    pub foo: String,
+}
 
 impl Config {
     pub fn load() -> Result<Self> {
-        let config_path = Self::config_path()?;
-        info!(target: TARGET, "trying to load configuration from '{}'", config_path.display());
+        let config_home_path = Self::config_home_path()?;
+        let _ = std::fs::create_dir_all(&config_home_path);
+        let config_file_path = config_home_path.join("config.toml");
 
-        Ok(Config {})
+        info!(target: TARGET, "loading configuration from '{}'", config_file_path.display());
+        let config_file_content = match std::fs::read_to_string(config_file_path) {
+            Ok(config_file_content) => config_file_content,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                info!("config file does not exist; using default configuration");
+                "".to_string()
+            }
+            Err(e) => return Err(Error::ConfigRead(e)),
+        };
+
+        Ok(toml::from_str(&config_file_content)?)
     }
 
-    fn config_path() -> Result<PathBuf> {
+    fn config_home_path() -> Result<PathBuf> {
         Ok(
             match std::env::var("{{ crate_name | shouty_snake_case }}_CONFIG_HOME") {
                 Ok(raw_file_path) => Path::new(&raw_file_path).to_path_buf(),
@@ -24,6 +38,18 @@ impl Config {
                     Err(_) => return Err(Error::ConfigHome),
                 },
             },
-        )
+        ) // TODO: more functional approach
     }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            foo: "bar".to_string(),
+        }
+    }
+}
+
+fn default_foo() -> String {
+    Config::default().foo
 }
