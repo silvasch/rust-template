@@ -8,6 +8,9 @@ pub enum Error {
     #[error("failed to read a .env file: {0}")]
     DotenvyIo(std::io::Error),
 
+	#[error("failed to find a config directory")]
+    ConfigHome,
+
     #[error("{0}")]
     Custom(String),
 }
